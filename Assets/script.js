@@ -1,7 +1,13 @@
 const key = "1a5906ffb99f056541188c9014c637b4";
 const searchBtn = document.querySelector(".searchButton");
 const cardSection = document.querySelector(".rowBoat");
+const links = document.querySelector(".links")
+const searches = [];
+const searchBar = document.getElementById("searchBar");
+const clearBtn = document.getElementById("clearBtn")
+var linkBtn;
 const fetchWeatherData = function(lat, lon) {
+    setLinks();
     const fiveDayURL = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${key}&units=imperial`
     fetch(fiveDayURL)
         .then(response => response.json())
@@ -16,10 +22,11 @@ const fetchWeatherData = function(lat, lon) {
         })
 };
 
-const fetchWeatherCoords = function(event){
-    const searchBar = document.getElementById("searchBar");
-    const city = searchBar.value;
+const fetchWeatherCoords = function(city){
+    console.log(searches)
     const fetchURL = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${key}&units=imperial`;
+    searches.push(city)
+    localStorage.setItem("city", JSON.stringify(searches));
     fetch(fetchURL)
         .then(response => response.json())
         .then(data => { 
@@ -59,10 +66,46 @@ const createWeatherCard = function(data){
   `
 }
 
-searchBtn.addEventListener("click", fetchWeatherCoords)
+
+searchBtn.addEventListener("click",() => fetchWeatherCoords(searchBar.value))
 
 document.querySelector(".search-bar").addEventListener("keyup", function (event) {
     if (event.key === "Enter") {
-        fetchWeatherCoords();
+        fetchWeatherCoords(searchBar.value);
+
     }
 });
+
+
+const setLinks = function() {
+    links.innerHTML = "";
+    var storageArr = localStorage.getItem("city");
+    storageArr = JSON.parse(storageArr)
+    console.log(storageArr)
+    storageArr?.forEach((search) => { 
+    const link = generateLink(search)
+    console.log(link)
+    links.innerHTML+=link;
+    linkBtn = document.getElementById("linkBtn");
+    
+})
+};
+
+const generateLink = function(search){
+    return `  
+    <button id="linkBtn">${search}</button>  
+`
+};
+
+const clearResults = function() {
+    var cityArray = JSON.parse(localStorage.getItem("city"))
+    cityArray = [];
+    localStorage.setItem("city", JSON.stringify(cityArray))
+    setLinks();
+}
+links.addEventListener("click", (e) => fetchWeatherCoords(e.target.innerText))
+
+clearBtn.addEventListener("click", clearResults)
+
+setLinks()
+

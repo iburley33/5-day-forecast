@@ -24,6 +24,16 @@
     height: auto;
     width: 90%;
   }
+  button {
+    margin: 10px;
+  }
+  .button {
+    margin: 10px;
+  }
+
+  #clearBtn {
+    margin: 10px;
+  }
   
   @media screen and (max-width: 577px) {
     .searchDiv {
